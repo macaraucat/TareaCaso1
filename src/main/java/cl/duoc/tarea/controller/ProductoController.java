@@ -5,6 +5,11 @@ import cl.duoc.tarea.model.Producto;
 import cl.duoc.tarea.service.ProductoService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
+
+import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,18 +23,26 @@ public class ProductoController {
     private ProductoService prodService;
 
     @GetMapping
-    public List<Producto> listarProductos(){
-        return prodService.obtenerTodos();
+    public ResponseEntity<List<Producto>> listarProductos(){
+        List<Producto> productos = prodService.obtenerTodos();
+        return ResponseEntity.ok(productos);
     }
     
     @PostMapping
-    public Producto crearProducto(@RequestBody Producto p){
-        return prodService.guardarProducto(p);
+    public ResponseEntity<?> crearProducto(@RequestBody Producto p){
+        try{
+            return ResponseEntity.ok(prodService.guardarProducto(p));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     
     @DeleteMapping("/{id}")
-    public String eliminarProducto(@PathVariable int id){
-        return prodService.eliminarPorId(id);
+    public ResponseEntity<String> eliminarProducto(@PathVariable int id){
+        try{
+            return ResponseEntity.ok(prodService.eliminarPorId(id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
 }
